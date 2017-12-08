@@ -93,12 +93,12 @@ CUSTOMIZATION
 
 import sys
 import random
-import thread  # needed for locking to make this threadsafe
+import _thread  # needed for locking to make this threadsafe
 
-from grabber import URLGrabError, CallbackObject, DEBUG, _to_utf8
-from grabber import _run_callback, _do_raise
-from grabber import exception2msg
-from grabber import _TH
+from .grabber import URLGrabError, CallbackObject, DEBUG, _to_utf8
+from .grabber import _run_callback, _do_raise
+from .grabber import exception2msg
+from .grabber import _TH
 
 def _(st): 
     return st
@@ -259,7 +259,7 @@ class MirrorGroup:
         self.grabber = grabber
         self.mirrors = self._parse_mirrors(mirrors)
         self._next = 0
-        self._lock = thread.allocate_lock()
+        self._lock = _thread.allocate_lock()
         self.default_action = None
         self._process_kwargs(kwargs)
 
@@ -286,7 +286,7 @@ class MirrorGroup:
     def _parse_mirrors(self, mirrors):
         parsed_mirrors = []
         for m in mirrors:
-            if isinstance(m, basestring):
+            if isinstance(m, str):
                 m = {'mirror': _to_utf8(m)}
             parsed_mirrors.append(m)
         return parsed_mirrors
@@ -423,7 +423,7 @@ class MirrorGroup:
             if DEBUG: DEBUG.info('MIRROR: trying %s -> %s', url, fullurl)
             try:
                 return func_ref( *(fullurl,), opts=opts, **kw )
-            except URLGrabError, e:
+            except URLGrabError as e:
                 if DEBUG: DEBUG.info('MIRROR: failed')
                 gr.errors.append((fullurl, exception2msg(e)))
                 obj = CallbackObject()
@@ -446,7 +446,7 @@ class MirrorGroup:
         func = 'urlgrab'
         try:
             return self._mirror_try(func, url, kw)
-        except URLGrabError, e:
+        except URLGrabError as e:
             obj = CallbackObject(url=url, filename=filename, exception=e, **kwargs)
             return _run_callback(kwargs.get('failfunc', _do_raise), obj)
     

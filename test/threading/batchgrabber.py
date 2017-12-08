@@ -31,7 +31,7 @@ be pulled in multiple threads.
 
 import os.path, sys
 if __name__ == '__main__':
-  print os.path.dirname(sys.argv[0])
+  print(os.path.dirname(sys.argv[0]))
   sys.path.insert(0, (os.path.dirname(sys.argv[0]) or '.') + '/../..')
 
 from threading import Thread, Semaphore
@@ -61,12 +61,12 @@ class BatchURLGrabber:
         del self.queue[0]
         thread = Worker(self, url, filename, kwargs)
         self.threads.append(thread)
-        if DEBUG: print "starting worker: " + url
+        if DEBUG: print("starting worker: " + url)
         thread.start()
       else:
         for t in self.threads:
           if not t.isAlive():
-            if DEBUG: print "cleaning up worker: " + t.url
+            if DEBUG: print("cleaning up worker: " + t.url)
             self.threads.remove(t)
         #if len(self.threads) == self.maxthreads:
         #  sleep(0.2)
@@ -81,15 +81,15 @@ class Worker(Thread):
     self.kwargs = kwargs
   
   def run(self):
-    if DEBUG: print "worker thread started."
+    if DEBUG: print("worker thread started.")
     grabber = self.parent.grabber
     progress_obj = grabber.opts.progress_obj
     if isinstance(progress_obj, MultiFileMeter):
       self.kwargs['progress_obj'] = progress_obj.newMeter()
     try:
       rslt = self.parent.grabber.urlgrab(self.url, self.filename, **self.kwargs)
-    except URLGrabError, e:
-      print '%s, %s' % (e, self.url)
+    except URLGrabError as e:
+      print('%s, %s' % (e, self.url))
       
 def main():
   progress_obj = None
@@ -98,13 +98,13 @@ def main():
   g = BatchURLGrabber(keepalive=1, progress_obj=progress_obj)
   for arg in sys.argv[1:]:
     g.urlgrab(arg)
-  if DEBUG: print "before batchgrab"
+  if DEBUG: print("before batchgrab")
   try:
     g.batchgrab()
   except KeyboardInterrupt:
     sys.exit(1)
     
-  if DEBUG: print "after batchgrab"
+  if DEBUG: print("after batchgrab")
   
 if __name__ == '__main__':
   main()

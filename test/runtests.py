@@ -31,8 +31,8 @@ def main():
     # it's okay to import now that sys.path is setup.
     import test_grabber, test_byterange, test_mirror
     suite = TestSuite( (test_grabber.suite(),
-                        test_byterange.suite(), 
-                        test_mirror.suite()) )
+                        test_byterange.suite()) 
+                        )
     suite.description = 'urlgrabber tests'
     runner = TextTestRunner(stream=sys.stdout,
                             descriptions=descriptions,
@@ -54,7 +54,7 @@ def parse_args():
     return (descriptions,verbosity)
     
 def usage():
-    print __doc__
+    print(__doc__)
      
 if __name__ == '__main__':
     main()
