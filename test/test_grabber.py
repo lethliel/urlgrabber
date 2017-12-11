@@ -62,7 +62,7 @@ class FileObjectTests(TestCase):
         "PYCurlFileObject .read() method"
         s = self.wrapper.read()
         self.fo_output.write(s.encode('utf-8'))
-        self.assertTrue(reference_data == self.fo_output.getvalue())
+        self.assertTrue(reference_data.encode('utf-8') == self.fo_output.getvalue())
 
     def test_readline(self):
         "PyCurlFileObject .readline() method"
@@ -70,7 +70,7 @@ class FileObjectTests(TestCase):
             s = self.wrapper.readline()
             self.fo_output.write(s)
             if not s: break
-        self.assertTrue(reference_data == self.fo_output.getvalue())
+        self.assertTrue(reference_data.encode('utf-8') == self.fo_output.getvalue())
 
     def convert_list(self, s):
         try:
@@ -84,7 +84,7 @@ class FileObjectTests(TestCase):
         li = self.wrapper.readlines()
         li = list(map(lambda x: self.convert_list(x), li)) 
         self.fo_output.write(''.join(li).encode('utf-8'))
-        self.assertTrue(reference_data == self.fo_output.getvalue())
+        self.assertTrue(reference_data.encode('utf-8') == self.fo_output.getvalue())
 
     def test_smallread(self):
         "PyCurlFileObject .read(N) with small N"
@@ -92,7 +92,7 @@ class FileObjectTests(TestCase):
             s = self.wrapper.read(23)
             self.fo_output.write(s.encode('utf-8'))
             if not s: break
-        self.assertTrue(reference_data == self.fo_output.getvalue())
+        self.assertTrue(reference_data.encode('utf-8') == self.fo_output.getvalue())
     
 class HTTPTests(TestCase):
     def test_reference_file(self):
@@ -104,7 +104,7 @@ class HTTPTests(TestCase):
         contents = fo.read()
         fo.close()
 
-        self.assertTrue(contents == reference_data)
+        self.assertTrue(contents == reference_data.encode('utf-8'))
 
     def test_post(self):
         "do an HTTP post"
@@ -491,8 +491,11 @@ class FTPRegetTests(RegetTestBase, TestCase):
         self.grabber.urlgrab(self.url, self.filename, reget='simple')
         data = self._read_file()
 
-        self.assertEqual(data[:self.hl], '0'*self.hl)
-        self.assertEqual(data[self.hl:], self.ref[self.hl:])
+        self.assertEqual(data[:self.hl], b'0'*self.hl)
+        reget_list = self.ref[self.hl:]
+        if not isinstance(reget_list, bytes):
+            reget_list = reget_list.encode('utf-8')
+        self.assertEqual(data[self.hl:], reget_list)
 
 class HTTPRegetTests(FTPRegetTests):
     def setUp(self):
@@ -510,7 +513,7 @@ class HTTPRegetTests(FTPRegetTests):
             data = self._read_file()
 
             self.assertEqual(data[:self.hl], '0'*self.hl)
-            self.assertEqual(data[self.hl:], self.ref[self.hl:])
+            self.assertEqual(data[self.hl:], bself.ref[self.hl:])
         except NotImplementedError:
             self.skip()
             

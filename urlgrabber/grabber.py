@@ -881,7 +881,7 @@ class URLParser:
                 if     code[0] not in self.hexvals or \
                        code[1] not in self.hexvals:
                     return 1
-                ind = string.find(path, '%', ind+1)
+                ind = str.find(path, '%', ind+1)
             return 0
         return 1
     
@@ -1095,7 +1095,7 @@ class URLGrabber(object):
                 exception = e
                 callback = opts.interrupt_callback
                 if not callback:
-                    raise
+                    raise exception
 
             if DEBUG: DEBUG.info('exception: %s', exception)
             if callback:
@@ -1107,7 +1107,7 @@ class URLGrabber(object):
 
             if (opts.retry is None) or (tries == opts.retry):
                 if DEBUG: DEBUG.info('retries exceeded, re-raising')
-                raise URLGrabError
+                raise exception
 
             retrycode = getattr(exception, 'errno', None)
             if (retrycode is not None) and (retrycode not in opts.retrycodes):
@@ -1307,7 +1307,7 @@ class PyCurlFileObject(object):
                 if self.opts.progress_obj:
                     size  = self.size + self._reget_length
                     self.opts.progress_obj.start(self._prog_reportname, 
-                                                 urllib.parse.unquote(self.url), 
+                                                 urllib.parse.unquote(self.url.decode('utf-8')), 
                                                  self._prog_basename, 
                                                  size=size,
                                                  text=self.opts.text)
