@@ -1825,8 +1825,10 @@ class PyCurlFileObject(object):
         # and we need to read more.
         
         if not self._complete: self._do_grab() #XXX cheater - change on ranges
+        buf = []
+        if self._rbuf:
+          buf = [self._rbuf]
         
-        buf = [self._rbuf]
         bufsize = len(self._rbuf)
         while amt is None or amt:
             # first, delay if necessary for throttling reasons
@@ -2477,7 +2479,7 @@ class _TH:
         _TH.load()
 
         # Use just the hostname, unless it's a file:// baseurl.
-        host = urllib.parse.urlsplit(baseurl).netloc.decode('utf8').split('@')[-1] or baseurl
+        host = urllib.parse.urlsplit(baseurl).netloc.split('@')[-1] or baseurl
 
         default_speed = default_grabber.opts.default_speed
         try: speed, fail, ts = _TH.hosts[host]
